@@ -1,0 +1,76 @@
+@media screen and (max-width:1730px) {
+    #playTime {
+        width: 550px;
+    }
+}
+
+@media screen and (max-width:1490px) {
+
+    .volumeImage,
+    #volume {
+        display: none;
+    }
+
+    .bottomPlayer {
+        justify-content: start;
+    }
+
+    .sidebar {
+        width: 20vw;
+    }
+}
+
+@media screen and (max-width:1186px) {
+
+    .sidebar {
+        display: none;
+    }
+
+    .mainContent {
+        width: 100vw;
+    }
+
+    .playlistCard {
+        min-width: 200px;
+        width: 200px;
+        height: 300px;
+    }
+
+    .bottomPlayer {
+        width: 100vw;
+    }
+    .playlistCard>.down {
+        /* top: 63%; */
+        top: 56%;
+    }
+}
+
+@media screen and (max-width:610px) {
+    .searchBox {
+        width: 85vw;
+    }
+}
+
+@media screen and (max-width:926px) {
+    .bottomPlayer {
+        flex-wrap: wrap;
+        height: fit-content;
+        padding: 20px 0;
+    }
+
+    #playTime {
+        width: 90vw;
+    }
+
+    .musicControls {
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+@media screen and (max-width:498px) {
+    .secondary {
+        display: none;
+    }
+}

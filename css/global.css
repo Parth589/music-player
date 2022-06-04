@@ -1,0 +1,208 @@
+.sidebar {
+    width: 15vw;
+    min-width: 276px;
+    background-color: #171719;
+    height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    /* z-index: 2; */
+}
+
+.sidebar h4 {
+    color: #4C4E54;
+    margin: 12px 10px;
+    font-size: 16px;
+}
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+
+
+}
+
+.listItms {
+    margin: 10px;
+    padding: 10px;
+}
+
+.container {
+    display: flex;
+}
+
+.mainContent {
+    width: calc(100vw - 15vw);
+    min-height: 100vh;
+    height: 100vh;
+    background-color: #1F1F22;
+    overflow-y: scroll;
+    scroll-padding: 750px;
+}
+
+.mainContent>nav {
+    width: 100%;
+    /* background-color: green; */
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.searchBox {
+    width: 500px;
+    background-color: #212124;
+    display: flex;
+    padding: 5px 10px;
+    outline: 1PX solid #49494d;
+}
+
+
+#search {
+    background-color: transparent;
+    width: 100%;
+    border: 0;
+    padding: 0 10px;
+    caret-color: white;
+    color: white;
+
+}
+
+#search :active,
+#search:focus {
+    outline: none;
+}
+
+.searchBox:focus {
+    outline: 1PX solid #68686d;
+}
+
+.horizontalSlider {
+    margin: 35px 0;
+}
+
+.horizontalSlider>.up {
+    display: flex;
+    justify-content: space-between;
+}
+
+.horizontalSlider>.up>* {
+    margin: 0 20px;
+}
+
+.scrollerImage {
+    cursor: pointer;
+    margin: 0 5px;
+}
+
+.playlistCard {
+    width: 270px;
+    min-width: 270px;
+    height: 400px;
+    border-radius: 7px;
+    background-image: url("../media/purple-love-song-music-album-cove.webp");
+    background-position: center;
+    background-size: cover;
+    /* box-shadow: inset 0px -150px 100px 10px rgb(0, 0, 0); */
+}
+
+.playlistCard>.down>* {
+    position: relative;
+    z-index: inherit;
+}
+
+.playlistCard>.down {
+    padding: 10px;
+    position: relative;
+    left: 0;
+    height: 130px;
+    top: 63%;
+    bottom: 0px;
+    z-index: 2;
+}
+
+.playlistCard>.down::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: #171719;
+    opacity: .7;
+    z-index: 1;
+}
+
+.slider {
+    display: flex;
+    gap: 1rem;
+    padding: 20px;
+    overflow: scroll;
+}
+
+.playlistCard .playBtn {
+    position: absolute;
+    right: 10px;
+    top: -21px;
+    cursor: pointer;
+}
+
+.playlistCard .playBtn:hover {
+    /* display: none;
+    filter: none; */
+    animation: roll 1s 1 forwards;
+}
+
+/* *botttom player styling */
+.bottomPlayer {
+    width: calc(100vw - 15vw);
+    height: 100px;
+    background-color: #212124;
+    position: absolute;
+    bottom: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.musicImage {
+    width: 80px;
+    height: 80px;
+    margin: 0 25px;
+}
+
+.musicInfo {
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 0 20px;
+}
+
+.musicInfo>h4 {
+    font-size: 20px;
+}
+
+.musicInfo>h6 {
+    font-size: 15px;
+}
+
+.musicControls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 25px;
+    gap: 10px;
+}
+
+#playTime {
+    width: 750px;
+}
+
+.options {
+    margin: 0 10px 0 35px;
+    cursor: pointer;
+}
+
+#volume {
+    width: 250px;
+    margin: 0px;
+}
