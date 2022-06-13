@@ -7,3 +7,23 @@
         transform: rotate(360deg);
     }
 }
+
+@keyframes open-sidebar {
+    from {
+        width: 0;
+    }
+
+    to {
+        width: 75vw;
+    }
+}
+
+@keyframes close-sidebar {
+    from {
+        width: 75vw;
+    }
+
+    to {
+        width: 0;
+    }
+}

@@ -1,6 +1,6 @@
 @media screen and (max-width:1730px) {
     #playTime {
-        width: 550px;
+        width: 500px;
     }
 }
 
@@ -23,7 +23,17 @@
 @media screen and (max-width:1186px) {
 
     .sidebar {
-        display: none;
+        width: 0px;
+        min-width: 0;
+        max-width: 400px;
+        position: absolute;
+        z-index: 5;
+        visibility: hidden;
+    }
+
+
+    .sidebar-trigger {
+        display: unset;
     }
 
     .mainContent {
@@ -39,6 +49,7 @@
     .bottomPlayer {
         width: 100vw;
     }
+
     .playlistCard>.down {
         /* top: 63%; */
         top: 56%;
@@ -47,7 +58,11 @@
 
 @media screen and (max-width:610px) {
     .searchBox {
-        width: 85vw;
+        width: 68vw;
+    }
+
+    .sidebar-trigger {
+        width: 20vw;
     }
 }
 
@@ -59,7 +74,7 @@
     }
 
     #playTime {
-        width: 90vw;
+        width: 80vw;
     }
 
     .musicControls {
@@ -72,5 +87,13 @@
 @media screen and (max-width:498px) {
     .secondary {
         display: none;
+    }
+
+    #playTime {
+        width: 75vw;
+    }
+
+    .mainContent>nav {
+        gap: 0;
     }
 }
