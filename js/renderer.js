@@ -5,9 +5,10 @@ var PK_VAR = 0;//! Primary key variable
 let isOpened = false;//! don't temper with it. it specifies that sidebar is opened or not 
 var CURRENT_PLAYING_INDEX = -1;//* index of currently playing track in PLAYLIST_ARRAY;
 var IS_PLAYING_ANYTHING = false;
-let PLAYLIST_ARRAY = [];// * array of songs(objects of music class) which identified as playlist
-let IS_RANDOM_PLAYING = false;
-let IS_REPEAT_PLAYING = false;
+var PLAYLIST_ARRAY = [];// * array of songs(objects of music class) which identified as playlist
+var IS_RANDOM_PLAYING = false;
+var IS_REPEAT_PLAYING = false;
+var SEEKBAR_INTERVAL_ID = null;
 class music {
     duration;//length of song
     name;// track name  without extension
@@ -16,7 +17,7 @@ class music {
     url;//url.createurl(filehandle.getfile())
     folder_name;
 }//* music class declaration
-var AUDIO_OBJ = new Audio();//* will manipulate this object to play/pause audio 
+var AUDIO_OBJ = document.getElementById("audio-obj");//* will manipulate this object to play/pause audio 
 //! don't give empty string in Audio constructor it will change the src to the hostname instead of any url 
 
 
@@ -76,7 +77,6 @@ window.addEventListener("resize", () => {
 
     if (window.innerWidth > 1186) {
 
-        console.log("BIG SCREEn");
         document.querySelector(".sidebar").style.visibility = "visible";
         document.querySelector(".sidebar").style.maxWidth = "15vw";
     }
@@ -92,7 +92,6 @@ window.addEventListener("resize", () => {
 //* adding functionallity to open sidebar with trigger
 let trigger = document.getElementById("sidebar-trigger");
 trigger.addEventListener("click", () => {
-    console.log("event triggered");
     let sidebar = document.querySelector(".sidebar");
     if (isOpened === false) {
         sidebar.style.visibility = "visible";
@@ -107,18 +106,17 @@ trigger.addEventListener("click", () => {
         }, 500);
         isOpened = false;
     }
-    console.log(sidebar);
 });
 
 
 
 //* open folder functionallity
 let openFolderBtn = document.getElementById("open-folder-btn");
-console.log(openFolderBtn);
-openFolderBtn.addEventListener("click", (e) => {
+openFolderBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    reset();
-    getDirectory(addlistenerToPlayBtn);
+    let a = await getDirectory(addlistenerToPlayBtn);
+    if (a === false)
+        reset();
 });
 
 
@@ -129,26 +127,25 @@ playBtn.addEventListener("click", () => {
     if (AUDIO_OBJ.src !== "")
         if (IS_PLAYING_ANYTHING == true) {
             //pause the playback
-            AUDIO_OBJ.pause();
-            IS_PLAYING_ANYTHING = false;
             playBtn.src = "media/play-circle-fill.svg";
+            pauseMusic();
         }
         else {
-            AUDIO_OBJ.play();
-            IS_PLAYING_ANYTHING = true;
+            playMusic2(true);
             playBtn.src = "media/pause-circle.svg";
         }
 });
 let nextBtn = document.getElementById("nextTrack");
 nextBtn.addEventListener("click", () => {
-    if (IS_RANDOM_PLAYING === false) {
-        CURRENT_PLAYING_INDEX = (CURRENT_PLAYING_INDEX + 1) % PLAYLIST_ARRAY.length;
+    if (AUDIO_OBJ.src !== "") {
+        if (IS_RANDOM_PLAYING === false) {
+            CURRENT_PLAYING_INDEX = (CURRENT_PLAYING_INDEX + 1) % PLAYLIST_ARRAY.length;
+        }
+        else {
+            CURRENT_PLAYING_INDEX = Math.floor((Math.random() * (PLAYLIST_ARRAY.length)));
+        }
+        playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer);
     }
-    else {
-        CURRENT_PLAYING_INDEX = Math.floor((Math.random() * (PLAYLIST_ARRAY.length - 1)));
-    }
-
-    playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer);
 });
 
 
@@ -167,7 +164,7 @@ prevBtn.addEventListener("click", () => {
                 }
             }
             else {
-                CURRENT_PLAYING_INDEX = Math.floor((Math.random() * (PLAYLIST_ARRAY.length - 1)));
+                CURRENT_PLAYING_INDEX = Math.floor((Math.random() * (PLAYLIST_ARRAY.length)));
                 playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer);
             }
         }
@@ -206,6 +203,29 @@ repeatBtn.addEventListener("click", () => {
         repeatBtn.style.filter = "invert()";
     }
 });
+
+
+//* autoplay + repeat functionallity
+AUDIO_OBJ.addEventListener("ended", () => {
+    console.log("End event generated....");
+    if (IS_REPEAT_PLAYING == true) {
+        playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer);
+    }
+    else {
+        console.log(CURRENT_PLAYING_INDEX);
+        if (CURRENT_PLAYING_INDEX == PLAYLIST_ARRAY.length - 1) {
+            //playlist array has ended
+            CURRENT_PLAYING_INDEX = 0;
+            playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer, () => { playBtn.click(); });
+
+        }
+        else
+            nextBtn.click();
+    }
+});
+
+
+
 //* file handling and all other functionality starts here.
 async function func() {
     const pickerOpts = {
@@ -222,29 +242,26 @@ async function func() {
     };
 
     var file = await window.showOpenFilePicker(pickerOpts);
-    console.log(file);
     file = file[0];
     file = await file.getFile();
-    console.log(file);
     document.getElementById("tempImg").src = URL.createObjectURL(file);
 }
 async function getDirectory(callback) {
-    console.log("INSIDE FUNCTION");
-    const dirHandle = await window.showDirectoryPicker();
-    console.log(dirHandle);
-    console.log("PICKED up");
+    try {
+
+        var dirHandle = await window.showDirectoryPicker();
+    } catch (e) {
+        return false;
+    }
     let container = document.querySelector(".slider");
     container.innerHTML = "";
     PK_VAR = 0;//doing this cause i know two folders can't be opened simultaneously.
     let anyAudioFound = false;
     for await (const entry of dirHandle.values()) {
-        console.log(entry);
         if (entry.kind == "file") {
             let eName = entry.name;
             let extension = eName.substring(eName.lastIndexOf("."));
-            console.log("ISFILE");
             if (extension == ".mp3") {
-                console.log("ISMP3");
                 anyAudioFound = true;
                 let trackName = eName.substring(0, Math.min(eName.lastIndexOf("."), 16));
                 let str = `
@@ -266,11 +283,8 @@ async function getDirectory(callback) {
                 musicObj.fileHandle = await entry.getFile();
                 musicObj.url = URL.createObjectURL(musicObj.fileHandle);
                 musicObj.folder_name = dirHandle.name;
-                console.log(musicObj);
                 PLAYLIST_ARRAY.push(musicObj);
                 container.innerHTML += str;
-                console.log(entry);
-                console.log(entry.kind, entry.name);
             }
         }
     }
@@ -279,9 +293,11 @@ async function getDirectory(callback) {
         return;
     }
     callback();
+    return true;
 };
 
 function addlistenerToPlayBtn() {
+    // add event listeners to play btns attached with card
     let array = Array.from(document.querySelectorAll(".playBtn"));
     array.forEach((e) => {
         e.addEventListener("click", () => {
@@ -308,23 +324,98 @@ function updateBottomPlayer(play) {
     else
         document.getElementById("bottomPlayBtn").src = "media/play-circle-fill.svg";
 }
-async function playMusic(obj, callback) {
+async function playMusic(obj, callback, callback2) {
+    // takes an music object and starts playing it 
+    if (SEEKBAR_INTERVAL_ID !== null) {
+        stopInterval(true);
+    }
     AUDIO_OBJ.src = obj.url;
+    await playMusic2(false);
+    startInterval();
+    // i am using it for my own purpose it is not function's working need
+    callback(true);
+    if (callback2 != undefined) {
+        callback2();
+    }
+}
+async function playMusic2(resume) {
+    //this function just play/pause the playback it doesn't change the track
     await AUDIO_OBJ.play();
     IS_PLAYING_ANYTHING = true;
-    callback(true);
+    if (resume)
+        resumeInterval();
 }
-
+function pauseMusic(stopEntirely) {
+    //this function just play/pause the playback it doesn't change the track
+    AUDIO_OBJ.pause();
+    IS_PLAYING_ANYTHING = false;
+    if (stopEntirely === undefined)
+        stopInterval(false);
+    else stopInterval(true);
+}
 function secondToMins(secs) {
     let fraction = (secs % 60) / 100;
     let decimal = Math.trunc(secs / 60);
     return (Math.round((decimal + fraction) * 100) / 100).toFixed(2);
 }
 
+
+
+// info: although i can use both string and number values to change input:range value, i will use number as they are easy to manipulate
+
+let seekbar = document.getElementById("playTime");
+seekbar.addEventListener("input", () => {
+    if (AUDIO_OBJ.src !== "") {
+        const D = AUDIO_OBJ.duration;
+        let val = Math.trunc(D * (Math.round(seekbar.value / 100) * 100) / 1000);
+        AUDIO_OBJ.currentTime = val;
+        seekbar.value = val * 1000 / D;
+    }
+});
+function startInterval() {
+    // it need to be called whenever track changes 
+    let seekbar = document.getElementById("playTime");
+    let div = 50 / AUDIO_OBJ.duration;
+    seekbar.value = 0;
+    SEEKBAR_INTERVAL_ID = setInterval(() => {
+        seekbar.value = Number(seekbar.value) + div * 10;
+    }, 500);
+}
+function resumeInterval() {
+    // it just play/pause the seekbar movement
+    if (SEEKBAR_INTERVAL_ID === null) {
+        let seekbar = document.getElementById("playTime");
+        let div = 50 / AUDIO_OBJ.duration;
+        seekbar.value = Number(seekbar.value) + div * 10;
+        SEEKBAR_INTERVAL_ID = setInterval(() => {
+            seekbar.value = Number(seekbar.value) + div * 10;
+        }, 500);
+    }
+}
+function stopInterval(setSeekbarToFull) {
+    if (SEEKBAR_INTERVAL_ID == null) {
+        console.error("Check code again You Asshole ;<");
+        return;
+    }
+    clearInterval(SEEKBAR_INTERVAL_ID);
+    SEEKBAR_INTERVAL_ID = null;
+    if (setSeekbarToFull) {
+        document.getElementById("playTime").value = 1000;
+        // ! 1000 is maxvalue of seekbar which is hardcoded
+    }
+}
+
+
 function reset() {
     PK_VAR = 0;
-    isOpened = false;
     CURRENT_PLAYING_INDEX = -1;
+    document.querySelector(".slider").innerHTML = "";
+    let container = document.querySelector(".musicInfo");
+    container.innerHTML = `
+                <h4>...</h4>
+                <h6>Artists : ...</h6>
+                <span>Playing from ...</span>
+    `;
     IS_PLAYING_ANYTHING = false;
     let tmp = document.getElementById("bottomPlayBtn");
     if (tmp !== null) {
@@ -342,25 +433,22 @@ function reset() {
         tmp.style.filter = "invert()";
     }
     if (AUDIO_OBJ.src !== "")
-        AUDIO_OBJ.pause();
-    AUDIO_OBJ = new Audio();
+        pauseMusic(true);
+    AUDIO_OBJ.src = "";
+    SEEKBAR_INTERVAL_ID = null;
 }
-AUDIO_OBJ.addEventListener("ended", () => {
-    console.log("End event fired");
-    AUDIO_OBJ.currentTime = 0;
-    document.getElementById("nextTrack").click();
-});
-
-
 /**
  * todo:
- * do something to detect end of current track,
- * *repeat track functionallity is not working.
- * * searching is not possible
- * !test design with multiple audio files(creating multiple playist cards)
- * ! seeking is not possible
- * ! can't see the current time in input range
- * replace section title with folder name
+ * * [✓] do something to detect end of current track,
+ * * [✓] repeat track functionallity is not working.
+ * *     searching is not possible
+ * * [✓] currently i am asuming that if user opens the open folder wizard it is deffinately going to select a folder (Generate an exception in which if user cancels the wizard, the application wont make any error.)
+ * !     test design with multiple audio files(creating multiple playist cards)
+ * ! [✓] seeking is not possible
+ * !     can't see the current time in input range
+ *       replace section title with folder name
+ * *     use artists name and other metadata of mp3 file using id3 tag (don't use just lorem ipsum...)
  * 
- * if got some free work, add all song names in sidebar also without play button links
+ *       if got some free time, add all song names in sidebar also without play button links
+ *  todo: add responsive layout features (eg. turn off repeat and random playing when they are not shown to user.window.resize())
  */

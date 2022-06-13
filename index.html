@@ -81,6 +81,7 @@
 
             <div class="bottomFallback"></div>
             <div class="bottomPlayer">
+                <audio id="audio-obj"></audio>
                 <img src="media/defaultPoster.jpg" alt="" class="musicImage">
                 <div class="musicInfo">
                     <h4>...</h4>
@@ -96,7 +97,7 @@
                         <img src="media/arrow-repeat.svg" alt="" class="options bigImage filter secondary" id="repeat">
                     </div>
                     <div id="playStrip">
-                        <input type="range" name="playTime" id="playTime" value="0">
+                        <input type="range" name="playTime" id="playTime" value="0" max="1000">
                         <span class="filter" id="duration">0.00</span>
                     </div>
                 </div>
