@@ -33,17 +33,25 @@
                 </div>
 
                 <ul class="list">
-                    <li class="listItms"><a href="#" class="link white mediumFont">Home</a></li>
-                    <li class="listItms"><a href="#" class="link white mediumFont">Explore</a></li>
-                    <li class="listItms"><a href="#" class="link white mediumFont">Videos</a></li>
-                    <li class="listItms"><a href="" class="link white mediumFont" id="open-folder-btn">Open Folder</a>
+                    <li class="listItms"><a href="#" class="link fontWhite mediumFont">Home</a></li>
+                    <li class="listItms"><a href="#" class="link fontWhite mediumFont">Explore</a></li>
+                    <li class="listItms"><a href="#" class="link fontWhite mediumFont">Videos</a></li>
+                    <li class="listItms switched">
+                        <label for="autoPlayChk" class="link mediumFont fontWhite">Autoplay</label>
+                        <label class="switch">
+                            <input type="checkbox" id="autoPlayChk">
+                            <span class=" slider2 round"></span>
+                        </label>
+                    </li>
+                    <li class="listItms"><a href="" class="link fontWhite mediumFont" id="open-folder-btn">Open
+                            Folder</a>
                     </li>
                 </ul>
             </div>
 
 
             <div class="myCollection">
-                <h4>My Collection</h4>
+                <h4 class="folderName">My Collection</h4>
                 <ul class="list">
                     <li class="listItms"><a href="#" class="link white mediumFont">Mixes and Radio</a></li>
                     <li class="listItms"><a href="#" class="link white mediumFont">Playlists</a></li>
@@ -65,7 +73,7 @@
             <div class="horizontalSlider fontWhite">
                 <div class="up">
                     <div class="sectionHead">
-                        Section Title
+                        From <strong class="folderName">...</strong>
                     </div>
                     <div class="scrollerBox">
                         <img src="media/arrow-left-circle-fill.svg" alt="" class="scrollerImage smallImage filter"

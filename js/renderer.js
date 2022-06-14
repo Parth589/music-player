@@ -70,7 +70,6 @@ function addFalback() {
     e.style.height = `${h}px`;
 }
 addFalback();
-// todo: add responsive layout features (eg. turn off repeat and random playing when they are not shown to user.)
 window.addEventListener("resize", () => {
 
     addFalback();
@@ -84,6 +83,10 @@ window.addEventListener("resize", () => {
         document.querySelector(".sidebar").style.visibility = "hidden";
         document.querySelector(".sidebar").style.maxWidth = "unset";
 
+    }
+    if (window.innerWidth <= 498) {
+        IS_RANDOM_PLAYING = false;
+        IS_REPEAT_PLAYING = false;
     }
 });
 
@@ -117,6 +120,7 @@ openFolderBtn.addEventListener("click", async (e) => {
     let a = await getDirectory(addlistenerToPlayBtn);
     if (a === false)
         reset();
+
 });
 
 
@@ -155,6 +159,8 @@ prevBtn.addEventListener("click", () => {
         if (AUDIO_OBJ.currentTime >= 5) {
             // first click will start playback from 0
             AUDIO_OBJ.currentTime = 0;
+            playBtn.click();
+            startInterval();
         }
         else {
             if (IS_RANDOM_PLAYING === false) {
@@ -207,24 +213,42 @@ repeatBtn.addEventListener("click", () => {
 
 //* autoplay + repeat functionallity
 AUDIO_OBJ.addEventListener("ended", () => {
-    console.log("End event generated....");
     if (IS_REPEAT_PLAYING == true) {
         playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer);
     }
     else {
-        console.log(CURRENT_PLAYING_INDEX);
-        if (CURRENT_PLAYING_INDEX == PLAYLIST_ARRAY.length - 1) {
-            //playlist array has ended
-            CURRENT_PLAYING_INDEX = 0;
-            playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer, () => { playBtn.click(); });
+        if (document.getElementById("autoPlayChk").checked) {
+            if (CURRENT_PLAYING_INDEX == PLAYLIST_ARRAY.length - 1) {
+                //playlist array has ended
+                CURRENT_PLAYING_INDEX = 0;
+                playMusic(PLAYLIST_ARRAY[CURRENT_PLAYING_INDEX], updateBottomPlayer, () => { playBtn.click(); });
 
+            }
+            else
+                nextBtn.click();
         }
-        else
-            nextBtn.click();
+        else {
+            playBtn.click();
+        }
     }
 });
 
-
+function setFolderName(name) {
+    let tmp = document.querySelectorAll(".folderName");
+    if (tmp.length !== 0) {
+        Array.from(tmp).forEach((e) => {
+            e.innerText = name;
+        });
+    }
+}
+function removeFolderName() {
+    let tmp = document.querySelectorAll(".folderName");
+    if (tmp.length !== 0) {
+        Array.from(tmp).forEach((e) => {
+            e.innerText = "";
+        });
+    }
+}
 
 //* file handling and all other functionality starts here.
 async function func() {
@@ -248,9 +272,9 @@ async function func() {
 }
 async function getDirectory(callback) {
     try {
-
         var dirHandle = await window.showDirectoryPicker();
     } catch (e) {
+        console.error("User cancelled the folder selection wizard", e);
         return false;
     }
     let container = document.querySelector(".slider");
@@ -292,6 +316,9 @@ async function getDirectory(callback) {
         container.innerHTML = "<h1>No audio file found, select another folder!</h1>";
         return;
     }
+
+    // render the folder name on every element which have class folderName
+    setFolderName(dirHandle.name);
     callback();
     return true;
 };
@@ -373,10 +400,13 @@ seekbar.addEventListener("input", () => {
     }
 });
 function startInterval() {
+    if (SEEKBAR_INTERVAL_ID !== null) {
+        stopInterval(false);
+    }
     // it need to be called whenever track changes 
     let seekbar = document.getElementById("playTime");
     let div = 50 / AUDIO_OBJ.duration;
-    seekbar.value = 0;
+    seekbar.value = div;
     SEEKBAR_INTERVAL_ID = setInterval(() => {
         seekbar.value = Number(seekbar.value) + div * 10;
     }, 500);
@@ -405,6 +435,52 @@ function stopInterval(setSeekbarToFull) {
     }
 }
 
+
+//* searching in tracks
+let search = document.getElementById("search");
+let container = document.querySelector(".slider");
+search.addEventListener("input", () => {
+    // ! this functionallity depends on the structure of HTML (ul.slider)
+    console.log("INput event is here...");
+    let containerHTML = container.innerHTML.trim();
+    if (containerHTML.startsWith("<h1")) { console.log("there is nothing to search"); }
+    else if (containerHTML.startsWith("<li")) {
+        console.log("there is something to search");
+        _search();
+    }
+});
+search.addEventListener("blur", () => {
+    console.log("blur event is here...");
+    search.value = "";
+    let container = document.querySelector(".slider");
+    Array.from(container.children).forEach(element => {
+        element.style.display = "block";
+    });
+});
+
+function _search() {
+    let regEx = new RegExp(search.value, "i");
+    Array.from(container.children).forEach(element => {
+        if (regEx.test(element.innerText)) {
+            element.style.display = "block";
+        }
+        else {
+            element.style.display = "none";
+        }
+    });
+
+}
+function debug() {
+    //this function will log all important constants
+    console.log("PK_VAR", PK_VAR);
+    console.log("isOpened", isOpened);
+    console.log("CURRENT_PLAYING_INDEX", CURRENT_PLAYING_INDEX);
+    console.log("IS_PLAYING_ANYTHING", IS_PLAYING_ANYTHING);
+    console.log("PLAYLIST_ARRAY", PLAYLIST_ARRAY);
+    console.log("IS_RANDOM_PLAYING", IS_RANDOM_PLAYING);
+    console.log("IS_REPEAT_PLAYING", IS_REPEAT_PLAYING);
+    console.log("SEEKBAR_INTERVAL_ID", SEEKBAR_INTERVAL_ID);
+}
 
 function reset() {
     PK_VAR = 0;
@@ -436,19 +512,22 @@ function reset() {
         pauseMusic(true);
     AUDIO_OBJ.src = "";
     SEEKBAR_INTERVAL_ID = null;
+    removeFolderName();
 }
 /**
  * todo:
  * * [✓] do something to detect end of current track,
  * * [✓] repeat track functionallity is not working.
- * *     searching is not possible
+ * * [✓] searching is not possible
  * * [✓] currently i am asuming that if user opens the open folder wizard it is deffinately going to select a folder (Generate an exception in which if user cancels the wizard, the application wont make any error.)
- * !     test design with multiple audio files(creating multiple playist cards)
+ * ! [✓] test design with multiple audio files(creating multiple playist cards)
  * ! [✓] seeking is not possible
  * !     can't see the current time in input range
- *       replace section title with folder name
+ *   [✓] replace section title with folder name
  * *     use artists name and other metadata of mp3 file using id3 tag (don't use just lorem ipsum...)
  * 
- *       if got some free time, add all song names in sidebar also without play button links
- *  todo: add responsive layout features (eg. turn off repeat and random playing when they are not shown to user.window.resize())
+ * *     make sidebar more useful (it is not made for just open folder button. add more stuff in it.)
+ *       -add all song names in sidebar also without play button links
+ *   [✓] -add autoplay option in sidebar
+ *       -test that sidebar design with multiple tracks.(add a scrollbar if needed)
  */
