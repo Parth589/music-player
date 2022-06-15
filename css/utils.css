@@ -1,69 +1,73 @@
 :root {
-    --font-title: 18px;
-    --font-caption: 12px;
-    --font-input: 16px;
-    --font-sectionHead: 24px;
+  --font-title: 18px;
+  --font-caption: 12px;
+  --font-input: 16px;
+  --font-sectionHead: 24px;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 *::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
 * {
-    -ms-overflow-style: none;
-    /* IE and Edge */
-    scrollbar-width: none;
-    /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 .smallImage {
-    width: 20px;
+  width: 20px;
 }
 
 .filter {
-    filter: invert();
+  filter: invert();
 }
 
 .inputFont {
-    font-size: var(--font-input);
+  font-size: var(--font-input);
 }
 
 .captionfont {
-    font-size: var(--font-caption);
+  font-size: var(--font-caption);
 }
 
 .sectionHeadFont {
-    font-size: var(--font-sectionHead);
+  font-size: var(--font-sectionHead);
 }
 
 .titlefont {
-    font-size: var(--font-title);
+  font-size: var(--font-title);
 }
 
 .fontWhite {
-    color: white;
+  color: white;
 }
 
 .container {
-    font-family: Arial, Helvetica, sans-serif;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .slider {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 .bigImage {
-    width: 40px;
+  width: 40px;
+}
+::selection {
+  background-color: white;
+  color: #171719;
 }
