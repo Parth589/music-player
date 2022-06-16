@@ -68,7 +68,9 @@ function addFalback() {
 addFalback();
 window.addEventListener('resize', () => {
     addFalback();
-
+    if (isOpened == true) {
+        trigger.click();
+    }
     if (window.innerWidth > 1186) {
         document.querySelector('.sidebar').style.visibility = 'visible';
         document.querySelector('.sidebar').style.maxWidth = '15vw';
@@ -94,7 +96,7 @@ trigger.addEventListener('click', () => {
         sidebar.style.animation = 'close-sidebar 1s 1 forwards';
         setTimeout(() => {
             sidebar.style.visibility = 'hidden';
-        }, 500);
+        }, 200);
         isOpened = false;
     }
 });
@@ -465,10 +467,13 @@ search.addEventListener('input', () => {
 search.addEventListener('blur', () => {
     console.log('blur event is here...');
     search.value = '';
-    let container = document.querySelector('.slider');
-    Array.from(container.children).forEach((element) => {
-        element.style.display = 'block';
-    });
+    setTimeout(() => {
+        let container = document.querySelector('.slider');
+        Array.from(container.children).forEach((element) => {
+            element.style.display = 'block';
+        });
+
+    }, 3000);
 });
 
 function _search() {

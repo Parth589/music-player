@@ -1,29 +1,29 @@
 @keyframes roll {
-    from {
-        transform: rotate(0);
-    }
+  from {
+    transform: rotate(0);
+  }
 
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes open-sidebar {
-    from {
-        width: 0;
-    }
+  from {
+    width: 0;
+  }
 
-    to {
-        width: 75vw;
-    }
+  to {
+    width: 65vw;
+  }
 }
 
 @keyframes close-sidebar {
-    from {
-        width: 75vw;
-    }
+  from {
+    width: 65vw;
+  }
 
-    to {
-        width: 0;
-    }
+  to {
+    width: 0;
+  }
 }
