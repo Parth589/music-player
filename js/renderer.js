@@ -530,7 +530,7 @@ function reset() {
         tmp.style.filter = 'invert()';
     }
     if (AUDIO_OBJ.src !== '') pauseMusic(true);
-    AUDIO_OBJ.src = '';
+    AUDIO_OBJ.removeAttribute('src');
     SEEKBAR_INTERVAL_ID = null;
     removeFolderName();
 }
